@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>沖縄 こどもの病院・クリニック検索</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#f4fbfb;--card:#fff;--tx:#1d3b3f;--sub:#5f7c80;--ac:#0fa3a3;--ac2:#ff8a65;--bd:#d5e8e8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10201f;--card:#182c2b;--tx:#e6f4f3;--sub:#93b3b1;--ac:#3cc9c4;--ac2:#ff9b7a;--bd:#2a4645}}
+:root[data-theme="dark"]{--bg:#10201f;--card:#182c2b;--tx:#e6f4f3;--sub:#93b3b1;--ac:#3cc9c4;--ac2:#ff9b7a;--bd:#2a4645}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;line-height:1.6}
+main{max-width:720px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:1.4rem;margin:0 0 4px}
+.lead{color:var(--sub);font-size:.9rem;margin:0 0 16px}
+.emg{background:#ffe9e2;color:#8a2b12;border-radius:12px;padding:10px 14px;font-size:.88rem;margin-bottom:16px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .emg{background:#3a2019;color:#ffc9b8}}
+.box{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:14px}
+input[type=search]{width:100%;padding:11px 12px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);color:var(--tx);font-size:1rem}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chips button{border:1px solid var(--bd);background:var(--bg);color:var(--tx);border-radius:999px;padding:6px 12px;font-size:.85rem;cursor:pointer}
+.chips button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+.lbl{font-size:.75rem;color:var(--sub);margin:10px 0 0}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:10px}
+.card h3{margin:0 0 4px;font-size:1.02rem}
+.tag{display:inline-block;font-size:.72rem;border-radius:6px;padding:1px 8px;margin-right:4px;background:var(--bg);border:1px solid var(--bd);color:var(--sub)}
+.tag.s{border-color:var(--ac);color:var(--ac)}
+.tag.e{background:var(--ac2);color:#fff;border-color:var(--ac2)}
+.note{color:var(--sub);font-size:.85rem;margin:6px 0 10px}
+a.btn{display:inline-block;background:var(--ac);color:#fff;text-decoration:none;border-radius:10px;padding:8px 14px;font-size:.88rem}
+a.btn.o{background:transparent;color:var(--ac);border:1px solid var(--ac)}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.info{font-size:.85rem;margin:0 0 10px;padding:8px 10px;background:var(--bg);border-radius:10px}.info div{margin:2px 0}.info .u{color:var(--sub)}.info .m{color:var(--ac2)}.info .v{color:var(--sub);font-size:.75rem}
+.foot{color:var(--sub);font-size:.78rem;margin-top:20px}
+</style>
+</head>
+<body>
+<main>
+<h1 id="h">🏥 沖縄 こどもの病院・クリニック検索</h1>
+<p class="lead">エリアや種類で、病院・クリニックを探せるよ🌺</p>
+<div class="emg">🚑 <b>緊急時は119</b>／夜間・休日に迷ったら小児救急電話相談 <b>#8000</b> も使えるよ</div>
+
+<div class="box">
+<input type="search" id="q" placeholder="🔍 病院名・地域で絞り込み（例：中部、那覇）">
+<p class="lbl">エリア</p>
+<div class="chips" id="areas"></div>
+<p class="note" id="anote" style="margin:8px 0 0"></p>
+<p class="lbl">種類</p>
+<div class="chips" id="types"></div>
+<p class="lbl">得意・対応</p>
+<div class="chips" id="sps"></div>
+</div>
+
+<div id="list"></div>
+<p class="foot" id="chk"></p>
+<p class="foot">※ 公開されている医療情報サイト・公式サイトをもとにしたリストです。診療時間・休診日・受付状況は変わることがあるので、受診前に必ず電話か公式サイトで確認してね。北部・宮古・八重山のクリニックは準備中です。</p>
+</main>
+<script>
+/* 更新メモ: rs=[["WEB予約","URL"]] でWEB受付ボタン、mu="2026-10-08" で備考の表示期限。各施設に h=診療時間, off=休診日, rc=受付時間, m=備考, v=確認日(例 "2026-10-01") を足せます。
+   月1回の確認が終わったら LAST_CHECKED を更新してね。 */
+const LAST_CHECKED="";
+const H="総合病院・救急",HS="小児専門・救急",C="クリニック";
+const DATA=[
+{n:"沖縄県立南部医療センター・こども医療センター",a:"南部",c:"南風原町",t:HS,e:1},
+{n:"琉球大学病院",a:"中部",c:"西原町",t:"大学病院"},
+{n:"沖縄県立中部病院",a:"中部",c:"うるま市",t:H,e:1},
+{n:"浦添総合病院",a:"中部",c:"浦添市",t:H,e:1},
+{n:"那覇市立病院",a:"那覇",c:"那覇市",t:H,e:1,w:"https://www.nahacity-hospital.jp/section/shouni"},
+{n:"沖縄赤十字病院",a:"那覇",c:"那覇市",t:"総合病院"},
+{n:"沖縄県立北部病院",a:"北部",c:"名護市",t:H,e:1},
+{n:"沖縄県立宮古病院",a:"宮古",c:"宮古島市",t:H,e:1},
+{n:"沖縄県立八重山病院",a:"八重山",c:"石垣市",t:H,e:1},
+{n:"小児クリニックたまなは",sp:["一般診療","アレルギー","予防接種"],a:"那覇",c:"那覇市",t:C,ad:"安謝1丁目3-10 HOPビル101",tel:"098-867-0017",k:"小児科・アレルギー科",w:"https://www.tamanaha-clinic.com/",rs:[["LINE予約","https://lin.ee/YA1xN1a"],["WEB予約","https://etamanaha.reserve.ne.jp/"]],h:"9:00〜12:30／14:00〜17:30（月火水金土）",off:"木・日・祝",rc:"8:30〜12:30／14:00〜17:00",m:"2026/4/4〜 仮診療所で診療中。受付はオンライン予約のみ（救急・再診予約の方は電話）",v:"2026-09-29"},
+{n:"首里こどもクリニック",a:"那覇",c:"那覇市",t:C,ad:"首里久場川町2-96-18 メディカルプラザ首里4F",tel:"098-885-2525",k:"内科・小児科・皮膚科"},
+{n:"前浜小児科医院",a:"那覇",c:"那覇市",t:C,ad:"松川2-5-30",tel:"098-885-5106",k:"小児科・皮膚科"},
+{n:"池城こども医院",a:"那覇",c:"那覇市",t:C,ad:"天久1丁目8-1-201",tel:"098-866-2188",k:"内科・小児科"},
+{n:"西町クリニック",sp:["一般診療","アレルギー","予防接種"],a:"那覇",c:"那覇市",t:C,ad:"西3丁目4-1 アーバンビュー西町",tel:"098-867-0010",k:"小児科・内科",w:"https://nishimachi.jp/",h:"公式サイトは受付時間のみ掲載",off:"木曜午後・土曜午後・日曜・祝日",rc:"9:00〜11:30／14:00〜17:30（木・土は午前のみ）",m:"公式サイト内で休診日の表記が一部異なる（土曜午後の記載なし）。受診前に電話で確認を",v:"2026-09-29"},
+{n:"ぐるんぱ小児科",sp:["一般診療","アレルギー","予防接種"],a:"中部",c:"浦添市（当山）",t:C,ad:"当山2-2-11 バークレーズメディカルモール4F",k:"小児科（赤ちゃん〜15才）",w:"http://groompa-peds.net/",rs:[["WEB予約","https://groompa-peds.mdja.jp/"]],h:"公式サイトでは画像のみ掲載のため未確認",m:"2026/9/16〜10/8 は改修工事のため臨時休診（10/9〜通常診療）",mu:"2026-10-08",v:"2026-09-29"},
+{n:"みやぎ小児科クリニック",a:"中部",c:"宜野湾市",t:C,k:"小児科・内科",w:"https://doctorsfile.jp/h/92044/"},
+{n:"山田小児科内科医院",a:"中部",c:"うるま市",t:C,ad:"石川東山1-19-11",tel:"098-965-3577",k:"内科・小児科"},
+{n:"みどり町クリニック",sp:["一般診療","予防接種"],a:"中部",c:"うるま市",t:C,ad:"みどり町5-27-2",tel:"098-972-3858",k:"内科・小児科",w:"https://midorimachi-clinic.jp/",h:"9:00〜12:00／14:00〜17:00（月〜土）",off:"日曜・祝祭日",m:"在宅診療・検診などで時間が変わることあり（月別の診療カレンダーは公式サイトに掲載）。感染症が疑われる場合は予約制で、当日8:30から電話受付",v:"2026-09-29"},
+{n:"とよさきこどもクリニック",sp:["一般診療","予防接種"],a:"南部",c:"豊見城市",t:C,ad:"渡橋名289-62-2",tel:"098-851-0020",k:"小児科（小児循環器・小児皮膚科）",w:"https://www.toyosaki-kodomo-clinic.com/",rs:[["WEB予約（デジスマ）","https://patient.digikar-smart.jp/institutions/5b2d5765-ce47-43e0-be56-95d8967d2eeb/reserve"]],h:"8:30〜11:30（月〜土）／14:30〜17:30（月火水金）",off:"木曜午後・土曜午後・日曜・祝日",m:"13:30〜14:30は予防接種・健診（電話予約）。台風接近時はバス運休なら休診",v:"2026-09-29"},
+{n:"やえせ子どもクリニック",sp:["一般診療","アレルギー","予防接種"],a:"南部",c:"八重瀬町",t:C,ad:"伊覇54-3 2F-1",tel:"098-998-1234",k:"小児科（アレルギー専門医）",w:"http://www.yaese-kodomo.com/",rs:[["WEB受付","https://yaese-kodomo.mdja.jp/"]],h:"8:30〜11:30／14:30〜17:00",off:"水曜・日曜・祝日",rc:"WEB受付のみ 午前7:30〜10:30／午後7:30〜16:00（定員で早めに終了あり）",m:"受付はWEBのみ。前日から38℃以上の熱がある場合は入室前に電話を。月〜金13:30〜14:30は予防接種・健診専用（電話予約）。土曜午後は一般診療を休止するお知らせ（2024年5月）あり、現在の状況は電話で確認を",v:"2026-09-29"},
+{n:"まちなと小児クリニック",sp:["一般診療","アレルギー","予防接種","病児保育"],a:"中部",c:"浦添市牧港",t:C,ad:"牧港2-46-12 メディカルプラザ牧港4階",tel:"098-942-1110",k:"小児科・アレルギー科",w:"https://machinatokodomo-c.com/",rs:[["WEB予約","https://machinatokodomo.mdja.jp/"]],h:"9:00〜12:00／14:00〜18:00（土は午前のみ）",off:"土曜午後・日曜・祝日",rc:"WEB受付 午前6:30〜11:30／午後11:30〜17:30（定員になり次第終了）",m:"暴風警報でバス・モノレールが運休した場合は休診。併設の病児保育室lala：070-8417-5894",v:"2026-09-29"},
+{n:"あさとこどもクリニック",sp:["一般診療","予防接種","夜尿症"],a:"中部",c:"沖縄市古謝",t:C,ad:"古謝2丁目19-6",tel:"098-921-2121",k:"小児科（0〜15歳）",w:"https://asato-kodomo.com/",rs:[["WEB予約","https://akc.mdja.jp/"]],h:"8:30〜12:00／15:30〜17:30（13:30〜14:30は予防接種）",off:"水・土曜午後、日曜・祝日",v:"2026-09-29"},
+{n:"岡こどもクリニック",sp:["一般診療","アレルギー","予防接種"],a:"中部",c:"宜野湾市宇地泊",t:C,tel:"098-942-9255",k:"小児科",w:"http://www.oka-kodomo-clinic.jp/",rs:[["WEB受付（再診の方）","http://oka-kodomo.mdja.jp/"]],h:"公式サイトは予約受付時間で掲載",off:"水曜・日曜・祝日",rc:"午前 8:45〜12:15／午後 14:45〜17:15（土は16:00まで）",m:"初診は電話予約（8:30〜・枠がなくなり次第終了）、再診はWEB受付。当日か前日に発熱がある場合は必ず伝える。レントゲン検査は不可",v:"2026-09-29"},
+{n:"はなしろ小児科",a:"中部",c:"沖縄市南桃原",t:C,ad:"南桃原3-36-13",tel:"098-930-5177",k:"小児科"},
+{n:"しろま小児科医院",sp:["一般診療","予防接種"],a:"南部",c:"豊見城市",t:C,ad:"字豊見城294-2",tel:"098-856-8811",k:"小児科",w:"https://www.shiroma-pediatrics.com/",rs:[["WEB受付","https://shiroma.mdja.jp/"]],h:"9:00〜12:00／13:30〜17:30（土曜午後は予防接種のみ）",off:"木曜午後・日曜・祝日",rc:"窓口 8:30〜／WEB 8:45〜（来院は午前11時・午後17時まで）",m:"13:30〜14:30は予防接種専用（要予約）。時間指定不可・来院順。症状確認の電話が入ることあり",v:"2026-09-29"},
+{n:"ありがとう子供クリニック",sp:["一般診療","予防接種"],a:"南部",c:"南風原町",t:C,ad:"津嘉山440-5",tel:"098-851-7000",k:"小児科",w:"https://arigatoclinic.com/",rs:[["オンライン受付","http://arigato.mdja.jp"]],h:"公式サイトは受付時間のみ掲載",off:"水曜・日曜・祝日",rc:"月火木金 9:00〜11:30／15:00〜17:30、土 9:00〜11:30／15:00〜16:30",m:"新患は電話で受付。混雑時は受付を早く終了することあり。バス・モノレールが止まったら休診",v:"2026-09-29"},
+{n:"大里こどもクリニック",sp:["一般診療","予防接種"],a:"南部",c:"南城市",t:C,ad:"大里字平良2545-1",tel:"098-882-8111",k:"小児科",rs:[["WEB受付","https://ozato-kodomo.mdja.jp/"]],h:"8:30〜12:30／14:00〜18:00（土曜午後は17:00まで）",off:"水曜・日曜・祝日",m:"14:00〜15:00は予防接種専用（WEB予約不可）。診療体制表は公式LINEで確認",v:"2026-09-29"},
+{n:"おおきた子どもクリニック",sp:["一般診療","アレルギー","予防接種"],a:"南部",c:"南城市",t:C,ad:"大里嶺井205-1",tel:"098-963-7333",k:"小児科・アレルギー・耳鼻・皮膚",w:"https://www.ookitacodomoclinic.com/",rs:[["WEB予約","https://qr.digikar-smart.jp/7417d231-2e3e-4ab0-ba39-02867809189a/reserve"]],h:"月火水金 9:00〜12:00／14:00〜18:00、土 13:00〜17:00のみ",off:"木曜・日曜・祝祭日",m:"WEB予約優先制。急な出張・健診で午前休診の日あり（お知らせ欄で確認）",v:"2026-09-29"},
+{n:"しもと医院",a:"南部",c:"南城市（玉城）",t:C,ad:"玉城字玉城171-2",tel:"098-988-0770",k:"内科・小児科・皮膚科",w:"https://shimoto-iin.blogspot.com/p/index.html",h:"8:30〜12:00",off:"火・金・祝日",m:"日曜診療・発熱外来あり（公式ブログの記載）。来院前に電話を",v:"2026-09-29"},
+{n:"きのしたこどもクリニック",sp:["一般診療","アレルギー"],a:"南部",c:"糸満市",t:C,ad:"真栄里2030-3",tel:"098-995-1100",k:"小児科・アレルギー（小児ぜんそく・アトピー等）",w:"https://www.kinoshita-kodomo.com/",h:"8:00〜11:00／13:00〜17:00（土曜午後は15:00まで）",m:"公式サイトの記載のまま。地図サイトとは時間が異なるので、電話で確認を。WEB診療予約あり（公式サイトから）",v:"2026-09-29"},
+{n:"くでけん小児科",a:"南部",c:"糸満市",t:C,ad:"西崎6-11-8",tel:"098-994-2099",k:"小児科"},
+{n:"がじまる診療所",a:"南部",c:"糸満市",t:C,ad:"西崎2-26-6",tel:"098-851-3347",k:"内科・小児科"}
+];
+const AREAS=["すべて","北部","中部","南部","離島"];
+const GRP={"那覇":"南部","南部":"南部","中部":"中部","北部":"北部","宮古":"離島","八重山":"離島"};
+const PRESET="";
+const TYPES=["すべて",C,HS,H,"大学病院"];
+const SPS=["すべて","一般診療","アレルギー","予防接種","病児保育","WEB予約あり"];
+let q0="";try{q0=new URLSearchParams(location.search).get("area")||decodeURIComponent(location.hash.replace("#",""))}catch(e){}
+let area=AREAS.includes(PRESET)?PRESET:(AREAS.includes(q0)?q0:"すべて"),type="すべて",sp="すべて";
+const $=id=>document.getElementById(id);
+function chips(el,arr,get,set){
+  el.innerHTML="";
+  arr.forEach(v=>{const b=document.createElement("button");b.textContent=v;
+    if(get()===v)b.className="on";b.onclick=()=>{set(v);render()};el.appendChild(b)});
+}
+function add(p,tag,txt,cls,href){const e=document.createElement(tag);e.textContent=txt;if(cls)e.className=cls;
+  if(href){e.href=href;if(!href.startsWith("tel"))e.target="_blank";e.rel="noopener"}p.appendChild(e);return e}
+function render(){
+  chips($("areas"),AREAS,()=>area,v=>area=v);
+  chips($("types"),TYPES,()=>type,v=>type=v);
+  chips($("sps"),SPS,()=>sp,v=>sp=v);
+  $("h").textContent="🏥 "+(area==="すべて"?"沖縄":"沖縄 "+area)+" こどもの病院・クリニック検索";
+  $("anote").textContent=area==="南部"?"※那覇市・豊見城・南風原・八重瀬・南城・糸満など":area==="離島"?"※宮古島・石垣島など":"";
+  document.title=$("h").textContent.replace("🏥 ","");
+  const q=$("q").value.trim();
+  const r=DATA.filter(d=>(area==="すべて"||GRP[d.a]===area)&&(type==="すべて"||d.t===type)&&(sp==="すべて"||(sp==="WEB予約あり"?(d.rs||[]).length>0:(d.sp||[]).includes(sp)))&&(!q||(d.n+d.a+d.c+d.t+(d.k||"")+(d.ad||"")).includes(q)));
+  const L=$("list");L.innerHTML="";
+  if(!r.length){add(L,"p","条件に合う施設がまだ載っていないよ🥲 条件をゆるめるか、#8000 も頼ってね","note")}
+  r.forEach(d=>{
+    const c=document.createElement("div");c.className="card";
+    add(c,"h3",d.n);
+    const g=document.createElement("div");
+    add(g,"span",d.a+"エリア","tag");add(g,"span",d.t,"tag");if(d.e)add(g,"span","救急対応あり","tag e");(d.sp||[]).forEach(x=>add(g,"span",x,"tag s"));
+    c.appendChild(g);
+    add(c,"p","📍 "+d.c+(d.ad?" "+d.ad:"")+(d.k?"　🩺 "+d.k:""),"note");
+    const inf=document.createElement("div");inf.className="info";
+    const line=(l,v)=>{const x=document.createElement("div");x.textContent=l+"："+(v||"未確認（電話か公式サイトで確認してね）");if(!v)x.className="u";inf.appendChild(x)};
+    if(d.t===C||d.h||d.off||d.rc){line("🕘 診療時間",d.h);line("🚫 休診日",d.off);line("📝 受付時間",d.rc);
+      if(d.m&&(!d.mu||new Date()<=new Date(d.mu+"T23:59:59"))){const x=document.createElement("div");x.textContent="⚠️ "+d.m;x.className="m";inf.appendChild(x)}
+      if(d.v){const x=document.createElement("div");x.textContent="確認日："+d.v.replace(/-/g,"/");x.className="v";inf.appendChild(x)}
+      c.appendChild(inf)}
+    const row=document.createElement("div");row.className="row";
+    if(d.tel)add(row,"a","📞 "+d.tel,"btn","tel:"+d.tel.replace(/-/g,""));
+    (d.rs||[]).forEach(r=>add(row,"a","📲 "+r[0],"btn",r[1]));
+    if(d.w)add(row,"a","🌐 公式サイト","btn o",d.w);
+    if(row.children.length)c.appendChild(row);
+    L.appendChild(c);
+  });
+}
+$("chk").textContent="🗓 診療時間などの最終確認日："+(LAST_CHECKED||"未実施（月1回更新予定）");
+$("q").oninput=render;render();
+</script>
+</body>
+</html>
