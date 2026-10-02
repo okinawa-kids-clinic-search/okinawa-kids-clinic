@@ -11,10 +11,11 @@
 :root[data-theme="dark"]{--bg:#10201f;--card:#182c2b;--tx:#e6f4f3;--sub:#93b3b1;--ac:#3cc9c4;--ac2:#ff9b7a;--bd:#2a4645}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;line-height:1.6}
+body{word-break:auto-phrase;margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;line-height:1.6}
 main{max-width:720px;margin:0 auto;padding:20px 16px 48px}
 h1{font-size:1.4rem;margin:0 0 4px}
 .lead{color:var(--sub);font-size:.9rem;margin:0 0 16px}
+.ph{display:inline-block}
 .emg{background:#ffe9e2;color:#8a2b12;border-radius:12px;padding:10px 14px;font-size:.88rem;margin-bottom:16px}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .emg{background:#3a2019;color:#ffc9b8}}
 .box{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:14px}
@@ -42,7 +43,7 @@ a.btn.o{background:transparent;color:var(--ac);border:1px solid var(--ac)}
 <main>
 <h1 id="h">🏥 沖縄 こどもの病院・クリニック検索</h1>
 <p class="lead">エリアや種類で、病院・クリニックを探せるよ🌺</p>
-<div class="emg">🚑 <b>緊急時は119</b>／夜間・休日に迷ったら小児救急電話相談 <b>#8000</b> も使えるよ</div>
+<div class="emg">🚑 <b>緊急時は119</b><br><span class="ph">夜間・休日に迷ったら</span><span class="ph">小児救急電話相談 <b>#8000</b> も使えるよ</span></div>
 
 <div class="box">
 <input type="search" id="q" placeholder="🔍 病院名・地域で絞り込み（例：中部、那覇）">
