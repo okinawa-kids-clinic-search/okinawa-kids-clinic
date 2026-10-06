@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>沖縄 こどものオンライン診療一覧</title>
+<style>
+:root{--bg:#f4fbfb;--card:#fff;--tx:#1d3b3f;--sub:#5f7c80;--ac:#0fa3a3;--ac2:#ff8a65;--bd:#d5e8e8;--hi:#fff6ec;--hibd:#ffc9a8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10201f;--card:#182c2b;--tx:#e6f4f3;--sub:#93b3b1;--ac:#3cc9c4;--ac2:#ff9b7a;--bd:#2a4645;--hi:#2c241c;--hibd:#6b4a33}}
+:root[data-theme="dark"]{--bg:#10201f;--card:#182c2b;--tx:#e6f4f3;--sub:#93b3b1;--ac:#3cc9c4;--ac2:#ff9b7a;--bd:#2a4645;--hi:#2c241c;--hibd:#6b4a33}
+*{box-sizing:border-box}
+body{word-break:auto-phrase;margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;line-height:1.6;padding-bottom:env(safe-area-inset-bottom,0px)}
+main{max-width:720px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:1.4rem;margin:0 0 4px}
+h2{font-size:1.05rem;margin:22px 0 10px}
+.lead{color:var(--sub);font-size:.9rem;margin:0 0 16px}
+.emg{background:#ffe9e2;color:#8a2b12;border-radius:12px;padding:10px 14px;font-size:.88rem;margin-bottom:16px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .emg{background:#3a2019;color:#ffc9b8}}
+:root[data-theme="dark"] .emg{background:#3a2019;color:#ffc9b8}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:10px}
+.card.big{background:var(--hi);border:2px solid var(--hibd);padding:18px}
+.card h3{margin:0 0 6px;font-size:1.05rem}
+.card.big h3{font-size:1.2rem}
+.badge{display:inline-block;background:var(--ac2);color:#fff;font-size:.75rem;font-weight:700;border-radius:999px;padding:2px 10px;margin-bottom:8px}
+.tag{display:inline-block;font-size:.72rem;border-radius:6px;padding:1px 8px;margin:0 4px 4px 0;background:var(--bg);border:1px solid var(--bd);color:var(--sub)}
+.tag.ok{background:#1f8f5f;color:#fff;border-color:#1f8f5f}
+.tag.ng{background:#eef1f2;color:#55666a;border-color:#cfd8da}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tag.ng{background:#26333a;color:#b8c7cc;border-color:#3a4a50}}
+:root[data-theme="dark"] .tag.ng{background:#26333a;color:#b8c7cc;border-color:#3a4a50}
+.info{font-size:.86rem;margin:8px 0 10px;padding:8px 10px;background:var(--bg);border-radius:10px}
+.info div{margin:3px 0}
+.m{color:var(--ac2)}
+a.btn{display:inline-block;background:var(--ac);color:#fff;text-decoration:none;border-radius:10px;padding:9px 16px;font-size:.9rem;font-weight:600}
+.card.big a.btn{font-size:1rem;padding:11px 18px}
+.foot{color:var(--sub);font-size:.78rem;margin-top:20px}
+</style>
+</head>
+<body>
+<main>
+<h1>💻 こどものオンライン診療一覧</h1>
+<p class="lead">夜間・休日に、おうちからスマホで診てもらえるサービスだよ🌙</p>
+<div class="emg">🚑 <b>ぐったりしている・息が苦しい・けいれんしている</b>ときは、オンラインではなく <b>119</b> へ。<br>迷ったら <b>#7119</b>（24時間）や <b>#8000</b> に相談してね。</div>
+
+<div id="okinawa"></div>
+<h2>🗾 全国のオンライン診療サービス</h2>
+<p class="lead" style="margin-top:-4px">沖縄からも使えるサービスだよ。</p>
+<div id="nation"></div>
+
+<p class="foot" id="chk"></p>
+<p class="foot">※ 公式サイトの情報をもとにしたリストです。時間・料金・対象年齢は変わることがあるので、利用前に公式サイトで確認してね。<br>※ 全国サービスでは、沖縄の子ども医療費助成（医療証）が窓口でそのまま使えず、いったん支払ってから市町村に申請する形になることがあります。</p>
+</main>
+<script>
+/* 更新メモ
+   island: "ok"=離島OK / "ng"=離島は対象外 / ""=未確認（タグを出さない）
+   確認が終わったら LAST_CHECKED を更新してね。 */
+const LAST_CHECKED="2026-10-06";
+const OKINAWA=[
+{n:"沖縄県医師会 小児の夜間オンライン診療（HELPOドクター）",how:"LINEで予約",
+ h:"18:00〜22:00（土日祝もOK）",age:"生後6か月〜中学生",med:"県内の好きな薬局で受け取り",
+ fee:"保険適用。医療証を使う場合は、いったん約1,000円を支払い→市町村に申請すると戻ってくる",
+ island:"ng",islandTxt:"沖縄本島のみ",
+ m:"2027年3月31日までの実証実験（期間限定）",
+ url:"https://healthcare-tech.co.jp/service/helpo-doctor/okinawa"}
+];
+const NATION=[
+{n:"ファストドクター",how:"アプリ",
+ h:"24時間365日（6〜22時は小児科医、22〜翌6時は内科医）",age:"赤ちゃんから",med:"近くの薬局 or 宅配（翌日）",
+ fee:"保険適用。アプリからの初診はシステム利用料0円",island:"ng",
+ url:"https://fastdoctor.jp/online-consultation/children/"},
+{n:"みてねコールドクター",how:"アプリ",
+ h:"24時間365日",age:"生後3か月〜",med:"近くの薬局（希望の薬局を指定）",
+ fee:"保険適用。システム利用料0円",island:"",
+ url:"https://calldoctor.jp/"},
+{n:"キッズドクター",how:"アプリ",
+ h:"夜間・休日も対応（時間は公式で確認）",age:"",med:"好きな薬局（処方箋をFAXで送ってくれる）",
+ fee:"保険・医療費助成の対象。追加の利用料なし",island:"",
+ url:"https://kids-doctor.jp/"},
+{n:"あんよ",how:"LINE",
+ h:"6:00〜23:00",age:"",med:"近くの薬局 or 自宅配送",
+ fee:"利用料無料。保険・医療費助成の対象",island:"",
+ url:"https://www.annyo.jp/"}
+];
+function add(p,tag,txt,cls){const e=document.createElement(tag);e.textContent=txt;if(cls)e.className=cls;p.appendChild(e);return e}
+function card(d,big){
+  const c=document.createElement("div");c.className="card"+(big?" big":"");
+  if(big)add(c,"span","🌺 沖縄県医師会が実施","badge");
+  add(c,"h3",d.n);
+  const g=document.createElement("div");
+  add(g,"span","📱 "+d.how,"tag");
+  if(d.island==="ok")add(g,"span","🏝 離島OK","tag ok");
+  if(d.island==="ng")add(g,"span","🏝 "+(d.islandTxt||"離島は対象外"),"tag ng");
+  c.appendChild(g);
+  const inf=document.createElement("div");inf.className="info";
+  const L=(l,v)=>add(inf,"div",l+"："+(v||"公式サイトで確認してね"));
+  L("🕘 診療時間",d.h);L("👶 対象年齢",d.age);L("💊 お薬",d.med);L("💰 料金",d.fee);
+  if(d.m)add(inf,"div","⚠️ "+d.m,"m");
+  c.appendChild(inf);
+  const a=add(c,"a","🌐 公式サイト・申し込み","btn");a.href=d.url;a.target="_blank";a.rel="noopener";
+  return c;
+}
+const O=document.getElementById("okinawa"),N=document.getElementById("nation");
+OKINAWA.forEach(d=>O.appendChild(card(d,true)));
+NATION.forEach(d=>N.appendChild(card(d,false)));
+document.getElementById("chk").textContent="🗓 最終確認日："+LAST_CHECKED.replace(/-/g,"/");
+</script>
+</body>
+</html>
