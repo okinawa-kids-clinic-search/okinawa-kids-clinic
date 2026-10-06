@@ -68,7 +68,7 @@ body.er a.btn:not(.o){font-size:1.05rem;padding:11px 18px;font-weight:600}
 <div class="chips" id="types"></div>
 <p class="lbl">対応内容</p>
 <div class="chips" id="sps"></div>
-<p class="lg">マークの見かた：🚼 おむつ台　🧸 キッズスペース　📲 WEB受付　🚗✕ 駐車場なし</p>
+<p class="lg" style="display:none">マークの見かた：🚼 おむつ台　🧸 キッズスペース　📲 WEB受付　🚗✕ 駐車場なし</p>
 </div>
 
 <div id="list"></div>
@@ -79,7 +79,7 @@ body.er a.btn:not(.o){font-size:1.05rem;padding:11px 18px;font-weight:600}
 /* 更新メモ: rs=[["WEB予約","URL"]] でWEB受付ボタン、mu="2026-10-08" で備考の表示期限。各施設に h=診療時間, off=休診日, rc=受付時間, m=備考, v=確認日(例 "2026-10-01") を足せます。
    f=["おむつ台","キッズスペース","駐車場なし"] でマーク表示（わかったものだけでOK）。
    月1回の確認が終わったら LAST_CHECKED を更新してね。 */
-const LAST_CHECKED="";
+const LAST_CHECKED="2026-10-06";
 const H="総合病院",HS=H,C="クリニック";
 const DATA=[
 {n:"沖縄県立南部医療センター・こども医療センター",a:"南部",c:"南風原町",t:HS,e:1,tel:"098-888-0123",w:"https://nanbuweb.hosp.pref.okinawa.jp/",ern:"小児救急の担当日：月・火・木・土"},
@@ -215,7 +215,8 @@ const GRP={"那覇":"南部","南部":"南部","中部":"中部","北部":"北�
 const PRESET="中部";
 const HP="総合病院・県立病院",EM="救急対応";
 const TYPES=["すべて",C,HP,EM];
-const SPS=["すべて","風邪・発熱など","アレルギー","予防接種","病児保育","WEB予約あり","おむつ台","キッズスペース"];
+const SPS=["すべて","風邪・発熱など","アレルギー","予防接種","病児保育","WEB予約あり"];
+const SHOW_MARKS=false; /* マーク（おむつ台など）を出すときは true にする */
 const FI={"おむつ台":"🚼 おむつ台","キッズスペース":"🧸 キッズスペース","駐車場なし":"🚗✕ 駐車場なし"};
 const feats=d=>{const f=new Set(d.f||[]),t=(d.fc||[]).join(" ");if(/おむつ/.test(t))f.add("おむつ台");if(/キッズスペース|おもちゃ|絵本コーナー/.test(t))f.add("キッズスペース");return[...f]};
 let ER=false;try{ER=new URLSearchParams(location.search).get("mode")==="er"}catch(e){}
@@ -251,7 +252,7 @@ function render(){
     const g=document.createElement("div");
     add(g,"span",d.a+"エリア","tag");add(g,"span",d.t,"tag");if(d.e)add(g,"span","救急対応あり","tag e");;(d.dp||[]).forEach(x=>add(g,"span",x,"tag s"));(d.sp||[]).forEach(x=>add(g,"span",x,"tag s"));
     c.appendChild(g);
-    {const fs=document.createElement("div");fs.className="fs";feats(d).forEach(x=>{if(FI[x])add(fs,"span",FI[x],x==="駐車場なし"?"x":"")});if((d.rs||[]).length)add(fs,"span","📲 WEB受付");if(fs.children.length)c.appendChild(fs)}
+    if(SHOW_MARKS){const fs=document.createElement("div");fs.className="fs";feats(d).forEach(x=>{if(FI[x])add(fs,"span",FI[x],x==="駐車場なし"?"x":"")});if((d.rs||[]).length)add(fs,"span","📲 WEB受付");if(fs.children.length)c.appendChild(fs)}
     if(d.ern)add(c,"p",(d.erw?"⚠️ ":"🌙 ")+d.ern,d.erw?"note erx":"note");
     if(d.fc)add(c,"p","🏷 "+d.fc.join(" ／ "),"note");
     add(c,"p","📍 "+d.c+(d.ad?" "+d.ad:"")+(d.k?"　🩺 "+d.k:""),"note");
@@ -279,7 +280,7 @@ function render(){
     add(dt,"p","電話番号などは載せていますが、診療時間・休診日はこれから確認します。受診前に電話で確認してね。","note");
     rest.forEach(d=>mk(d,dt));L.appendChild(dt)}
 }
-$("chk").textContent="🗓 診療時間などの最終確認日："+(LAST_CHECKED||"未実施（月1回更新予定）");
+$("chk").textContent="🗓 診療時間などの最終確認日："+(LAST_CHECKED.replace(/-/g,"/")||"未実施（月1回更新予定）");
 if(ER){document.body.classList.add("er");["depts","types","sps"].forEach(i=>{$(i).style.display="none";$(i).previousElementSibling.style.display="none"});document.querySelector(".lg").style.display="none";document.querySelector(".lead").textContent="夜間・休日に救急対応している病院の一覧だよ";$("q").placeholder="🔍 病院名・地域で絞り込み";
   const w=document.createElement("div");w.className="erw";w.textContent="⚠️ 受診前に必ず病院へ電話してね。救急対応の病院でも、その日に小児科の先生がいるとは限らないよ。";document.querySelector(".box").before(w);
   const rb=document.createElement("div");rb.className="rb";rb.id="rot";
